@@ -18,59 +18,35 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
-        /* 1. Floating Top-Left Return Pill (Always visible, elegant, doesn't interfere with flipbook) */
-        #portfolio-exit-pill {
-            position: fixed;
-            top: 18px;
-            left: 20px;
-            z-index: 999999;
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            color: #222222;
-            padding: 7px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 500;
-            letter-spacing: 0.01em;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.06);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        #portfolio-exit-pill:hover {
-            background: #ffffff;
-            color: #000000;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.1);
-            transform: translateY(-1px);
-        }
-
-        /* 2. Toolbar Icon Styling */
+        /* High-prominence, 3x thick exit icon in the dFlip control bar */
         .df-ui-btn.df-custom-exit {
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0.75;
-            transition: opacity 0.2s ease;
-            font-size: 13px;
-            line-height: 1;
+            cursor: pointer !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 16px !important;
+            font-weight: 900 !important;
+            color: #111111 !important;
+            opacity: 1 !important;
+            
+            /* Triple-weight stroke effect across webkit and standard text renderers */
+            -webkit-text-stroke: 1.2px #111111;
+            text-shadow: 0 0 1px #111111, 0 0 1px #111111;
+            
+            border-left: 1px solid rgba(0, 0, 0, 0.15) !important;
+            padding: 0 12px !important;
+            margin-left: 6px !important;
+            transition: transform 0.15s ease, color 0.15s ease, -webkit-text-stroke 0.15s ease;
         }
+
         .df-ui-btn.df-custom-exit:hover {
-            opacity: 1;
+            color: #d32f2f !important;
+            -webkit-text-stroke: 1.2px #d32f2f;
+            transform: scale(1.15);
         }
     </style>
 </head>
 <body>
-
-    <!-- Floating Top Pill -->
-    <a id="portfolio-exit-pill" onclick="handleExit(); return false;">
-        <span style="font-size: 15px; line-height: 0;">←</span> Back to Portfolio
-    </a>
 
     <!-- DearFlip Container -->
     <div 
@@ -93,7 +69,6 @@
             }
         }
 
-        // Robust poller: guarantees insertion into the DearFlip toolbar once it finishes rendering
         $(document).ready(function() {
             var checkCount = 0;
             var pollInterval = setInterval(function() {
@@ -101,8 +76,7 @@
                 if ($controls.length && !$('.df-custom-exit').length) {
                     var $exitBtn = $(
                         '<div class="df-ui-btn ti-close df-custom-exit" ' +
-                        'title="Back to Portfolio" ' +
-                        'style="border-left: 1px solid rgba(0,0,0,0.1); padding-left: 10px; margin-left: 6px;"></div>'
+                        'title="Close & Back to Portfolio"></div>'
                     );
 
                     $exitBtn.on('click', function(e) {
@@ -113,11 +87,8 @@
                     $controls.append($exitBtn);
                     clearInterval(pollInterval);
                 }
-                
                 checkCount++;
-                if (checkCount > 50) { // Stop polling after 10 seconds
-                    clearInterval(pollInterval);
-                }
+                if (checkCount > 50) clearInterval(pollInterval);
             }, 200);
         });
     </script>
