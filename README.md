@@ -1,2 +1,2 @@
-# Glint-Product-Brand-Guide-Adobe
-
+# Glint-Product-Brand-Guide
+Glint Product and Brand Development Guide
