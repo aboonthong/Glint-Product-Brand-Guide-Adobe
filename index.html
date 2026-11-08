@@ -15,17 +15,50 @@
             height: 100%;
             overflow: hidden;
             background-color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
-        /* Styling for the custom exit button in the toolbar */
+        /* 1. Floating Top-Left Return Pill (Always visible, elegant, doesn't interfere with flipbook) */
+        #portfolio-exit-pill {
+            position: fixed;
+            top: 18px;
+            left: 20px;
+            z-index: 999999;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: #222222;
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.01em;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        #portfolio-exit-pill:hover {
+            background: #ffffff;
+            color: #000000;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+
+        /* 2. Toolbar Icon Styling */
         .df-ui-btn.df-custom-exit {
-            font-family: inherit;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            opacity: 0.8;
+            opacity: 0.75;
             transition: opacity 0.2s ease;
+            font-size: 13px;
+            line-height: 1;
         }
         .df-ui-btn.df-custom-exit:hover {
             opacity: 1;
@@ -33,6 +66,13 @@
     </style>
 </head>
 <body>
+
+    <!-- Floating Top Pill -->
+    <a id="portfolio-exit-pill" onclick="handleExit(); return false;">
+        <span style="font-size: 15px; line-height: 0;">←</span> Back to Portfolio
+    </a>
+
+    <!-- DearFlip Container -->
     <div 
         class="_df_book" 
         source="Glint-Product-Brand-Guide.pdf" 
@@ -45,34 +85,41 @@
     <script src="dflip/js/dflip.min.js" type="text/javascript"></script>
 
     <script>
-        var option_df_manual_book = {
-            enableDownload: false,
-            onFlipbookInit: function(dflip) {
-                // Wait for controls to render, then append the exit button
-                setTimeout(function() {
-                    var $controls = $('.df-ui-controls');
-                    if ($controls.length && !$('.df-custom-exit').length) {
-                        var exitBtn = $(
-                            '<div class="df-ui-btn ti-close df-custom-exit" ' +
-                            'title="Back to Portfolio" ' +
-                            'style="border-left: 1px solid rgba(0,0,0,0.1); padding-left: 8px; margin-left: 4px;"></div>'
-                        );
-
-                        exitBtn.on('click', function() {
-                            // If opened directly or in same tab, returns to previous page
-                            if (window.history.length > 1) {
-                                window.history.back();
-                            } else {
-                                // Fallback URL if opened in a fresh tab
-                                window.location.href = "https://yourportfoliodomain.com"; 
-                            }
-                        });
-
-                        $controls.append(exitBtn);
-                    }
-                }, 400);
+        function handleExit() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = "https://yourportfoliodomain.com";
             }
-        };
+        }
+
+        // Robust poller: guarantees insertion into the DearFlip toolbar once it finishes rendering
+        $(document).ready(function() {
+            var checkCount = 0;
+            var pollInterval = setInterval(function() {
+                var $controls = $('.df-ui-controls');
+                if ($controls.length && !$('.df-custom-exit').length) {
+                    var $exitBtn = $(
+                        '<div class="df-ui-btn ti-close df-custom-exit" ' +
+                        'title="Back to Portfolio" ' +
+                        'style="border-left: 1px solid rgba(0,0,0,0.1); padding-left: 10px; margin-left: 6px;"></div>'
+                    );
+
+                    $exitBtn.on('click', function(e) {
+                        e.preventDefault();
+                        handleExit();
+                    });
+
+                    $controls.append($exitBtn);
+                    clearInterval(pollInterval);
+                }
+                
+                checkCount++;
+                if (checkCount > 50) { // Stop polling after 10 seconds
+                    clearInterval(pollInterval);
+                }
+            }, 200);
+        });
     </script>
 </body>
 </html>
